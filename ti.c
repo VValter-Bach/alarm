@@ -69,9 +69,9 @@ void add_hours(int amount)
 
 void time_settings(){
     while(1){
-        sleep(10);
+        sleep(60);
         if(tc){
-            sleep(10);
+            sleep(60);
 
             FILE* f = fopen(fp, "w");
             if (f == NULL) {

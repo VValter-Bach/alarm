@@ -32,7 +32,7 @@ void display()
         time(&rt);
         ti = localtime(&rt);
         time_display(ti->tm_min, ti->tm_hour);
-        //check_alarm_time(ti->tm_min, ti->tm_hour); // TODO:
+        if (ti->tm_min == alarm_min && ti->tm_hour == alarm_hour) music = 1;
         status_display(ti->tm_wday);
     }
 }
