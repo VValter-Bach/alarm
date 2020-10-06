@@ -41,6 +41,7 @@ void ls()
         }
         music_play = false;
         pthread_join(leds, NULL);
+        leds = 0;
     }
 }
 
