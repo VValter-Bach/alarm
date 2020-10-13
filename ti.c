@@ -78,7 +78,7 @@ void time_settings(){
                 fprintf(stderr, "Cant Open Config File under: %s", fp);
                 exit(-1);
             }
-            fprintf(f,"%u:%u\n", alarm_hour, alarm_min);
+            fprintf(f,"%d:%d\n", alarm_hour, alarm_min);
             fclose(f);
             tc = false;
         }
@@ -103,6 +103,6 @@ void time_setup()
         fprintf(stderr, "Cant Open Config File under: %s", fp);
         exit(-1);
     }
-    fscanf(f, "%u:%u\n", &alarm_hour, &alarm_min);
+    fscanf(f, "%d:%d\n", &alarm_hour, &alarm_min);
     fclose(f);
 }

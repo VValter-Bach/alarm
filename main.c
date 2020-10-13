@@ -12,7 +12,6 @@ void setup();
 
 int main()
 {
-    pthread_t light_sound;
     pthread_t digits;
     pthread_t settings;
     setup();
@@ -23,9 +22,8 @@ int main()
     wiringPiISR(INPUT_PLUS, INT_EDGE_FALLING, &(sub_min));
 
     pthread_create(&settings, NULL, (void*)time_settings, NULL);
-    pthread_create(&light_sound, NULL, (void* (*)(void*))ls, NULL);
     pthread_create(&digits, NULL, (void* (*)(void*))display, NULL);
-    pthread_join(digits, NULL);
+    ls();
 }
 
 void setup()

@@ -10,14 +10,14 @@
 #include <wiringPiSPI.h>
 
 #define PI 3.14f
+//#define FUNC_P (void * (*)(void*))
 // 194, 95, 0; 164, 0, 0; 59, 122, 0; 32, 74, 135; 0, 29, 194; 170, 51, 189;
 unsigned char colours[18] = {194, 95, 0, 164, 0, 0, 59, 122, 0, 32, 74, 135, 0, 29, 194, 170, 51, 189};
 // The global interface for the music
 bool music;
-void alarm_backend();
-
 bool music_play = false;
 int colour_index = 0;
+
 void led();
 void play_song();
 int random_wrapper(unsigned int);
@@ -25,22 +25,24 @@ void color_data(unsigned char*, int, int, int, int, int, float);
 
 void ls_setup()
 {
-    music = false;
+    music = true;
 }
 
 void ls()
 {
     pthread_t leds = 0;
+    void * data = NULL;
     while (1) {
         while (music) {
             colour_index = random_wrapper(6);
             music_play = true;
             if (leds == 0)
-                pthread_create(&leds, NULL, (void* (*)(void*))led, NULL);
+                pthread_create(&leds, NULL, &led, NULL);
             play_song();
         }
         music_play = false;
-        pthread_join(leds, NULL);
+        pthread_join(leds, data);
+        free(data);
         leds = 0;
     }
 }
@@ -53,7 +55,7 @@ void led()
     for (unsigned long long i = 0; music_play; i++) {
         color_data(dat, colours[colour_index], colours[colour_index + 1], colours[colour_index + 2], i, len, 80.0f);
         wiringPiSPIDataRW(0, dat, len);
-        usleep(30000); //sleeps for 300000 mikroseconds
+        nanosleep((const struct timespec[]){{0, 30000000}}, NULL); //sleeps for 300000 mikroseconds
     }
 
     for(int i = 0; i < len; i++) dat[i] = 0;
@@ -91,8 +93,8 @@ void color_data(unsigned char* dat, int R, int G, int B, int u, int len, float v
 void play_song()
 {
     DIR* dir;
-    struct dirent* ent;
-    struct dirent entries[300];
+    struct dirent * ent;
+    struct dirent * entries = malloc(300 * sizeof(struct dirent));
     if ((dir = opendir("/home/pi/Musik/")) == NULL) {
         fprintf(stderr, "ERROR");
         exit(-1);
@@ -104,8 +106,9 @@ void play_song()
     }
     closedir(dir);
     char cmd[500];
-    strcpy(cmd, "mpv --af=volume=replaygain-track --volume=100 \"/home/pi/Musik/");
+    strcpy(cmd, "mpv --af=volume=replaygain-track --no-terminal --volume=100 \"/home/pi/Musik/");
     strcat(cmd, (entries + random_wrapper(i))->d_name);
     strcat(cmd, "\"");
     system(cmd);
+    free(entries);
 }

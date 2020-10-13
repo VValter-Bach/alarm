@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <wiringPi.h>
 
-#define SLEEP 2222
+#define SLEEP 22222
 
 // Pin Constellation of Number: 0,         1,             2,             3,            4,             5,             6,             7,              8,              9,
 bool pinvalues[70] = { 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1 };
@@ -26,14 +26,14 @@ void display()
 {
 
     time_t rt; // Raw Time in Seconds from 1970
-    struct tm* ti; // Stuctured Time Information
 
     while (1) {
         time(&rt);
-        ti = localtime(&rt);
-        time_display(ti->tm_min, ti->tm_hour);
-        if (ti->tm_min == alarm_min && ti->tm_hour == alarm_hour) music = 1;
-        status_display(ti->tm_wday);
+        struct tm ti;
+        localtime_r(&rt, &ti);
+        time_display(ti.tm_min, ti.tm_hour);
+        if (ti.tm_min == alarm_min && ti.tm_hour == alarm_hour) music = 1;
+        status_display(ti.tm_wday);
     }
 }
 
@@ -102,7 +102,7 @@ void time_display(int mins, int hour)
                 num_on_digit(alarm_min % 10);
             break;
         }
-        usleep(SLEEP); //The sleep command for the pins to change according to the selected Number
+        nanosleep((const struct timespec[]){{0, SLEEP}}, NULL); //The sleep command for the pins to change according to the selected Number
     }
 }
 
