@@ -32,7 +32,7 @@ void display()
         struct tm ti;
         localtime_r(&rt, &ti);
         time_display(ti.tm_min, ti.tm_hour);
-        if (ti.tm_min == alarm_min && ti.tm_hour == alarm_hour) music = 1;
+        if (ti.tm_min == alarm_min && ti.tm_hour == alarm_hour && alarm_status) music = 1;
         status_display(ti.tm_wday);
     }
 }
